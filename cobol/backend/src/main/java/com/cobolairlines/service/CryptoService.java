@@ -1,23 +1,33 @@
 package com.cobolairlines.service;
 
+import java.util.Date;
+
+/**
+ * Interface for the legacy COBOL crypto algorithm.
+ * Methods are designed to work with byte arrays, as the
+ * original hash is EBCDIC binary data, not text.
+ */
 public interface CryptoService {
-    /**
-     * Produce the legacy cryptpass value for given inputs.
-     * Implementation MUST match COBOL `CRYPTO-VERIFICATION` exactly.
-     *
-     * @param empid employee id (may be used as salt)
-     * @param password raw password provided
-     * @param admidate admission date as a String in legacy format (implementation doc will define format)
-     * @return cryptpass string to compare with stored value
-     */
-    String produceCryptPass(String empid, String password, String admidate);
 
     /**
-     * Try legacy matching by brute-forcing the WS-KEY (0..999) to find a WS-KEY
-     * that reproduces a stored legacy crypt. This is a pragmatic fallback used
-     * during migration to accept existing users while we refine a perfect port.
+     * Generates the 8-byte legacy EBCDIC hash.
+     * Ported from CICS/LOGIN/CRYPTO-VERIFICATION.
      *
-     * @return true if a matching WS-KEY was found
+     * @param password      Plaintext password
+     * @param empid         Employee ID
+     * @param admissionDate Employee admission date (used as seed)
+     * @return 8-byte EBCDIC hash
      */
-    boolean legacyMatches(String empid, String password, String admidate, String storedCrypt);
+    byte[] generateLegacyHash(String password, String empid, Date admissionDate);
+
+    /**
+     * Verifies a plaintext password against a stored 8-byte EBCDIC hash.
+     *
+     * @param password      Plaintext password
+     * @param empid         Employee ID
+     * @param admissionDate Employee admission date
+     * @param storedHash    The 8-byte hash from the legacy PASSDOC file
+     * @return true if match, false otherwise
+     */
+    boolean verifyPassword(String password, String empid, Date admissionDate, byte[] storedHash);
 }
