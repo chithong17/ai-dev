@@ -31,7 +31,11 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- Ensure accurate translation of COBOL business logic to Java.
+- Validate data integrity and adherence to business rules.
+- Confirm React UI design aligns with original interface.
+- Verify at least three automated test cases per module.
+- Ensure deployability via Docker or localhost.
 
 ## Project Structure
 
