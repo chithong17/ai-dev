@@ -53,7 +53,7 @@ const HomePage = () => {
 
             {/* 2. KHU VỰC CHÍNH (HERO SECTION) */}
             <section className="hero-section" style={{ 
-                backgroundImage: 'url(/images/placeholder-flight.jpg)', // Tùy chọn: đặt hình nền qua class
+                backgroundImage: 'url(https://haycafe.vn/wp-content/uploads/2021/12/Hinh-anh-may-bay-dep-nhat.jpg)', // Tùy chọn: đặt hình nền qua class
                 backgroundSize: 'cover', 
                 backgroundPosition: 'center',
                 flexGrow: 1, 
@@ -92,7 +92,7 @@ const HomePage = () => {
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.7, duration: 0.6, type: "spring", stiffness: 120 }}
                         className="search-form-container"
-                        style={{ margin: '0 auto', maxWidth: '900px', transform: 'translateY(80px)' }} // Kéo Form lên cao
+                        style={{ margin: '0 auto', maxWidth: '900px', transform: 'translateY(60px)' }} // Kéo Form lên cao
                     >
                         <SearchFlightForm /> 
                     </motion.div>

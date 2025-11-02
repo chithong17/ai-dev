@@ -1,95 +1,51 @@
 /* Trong index.css hoặc theme.css */
 
-/* === KHU VỰC CHÍNH (HERO) === */
-.hero-section {
-  /* Đặt hình nền đẹp và chuyên nghiệp */
-  background-image: url("https://haycafe.vn/wp-content/uploads/2021/12/Hinh-anh-may-bay-dep-nhat.jpg");
-  background-attachment: fixed; /* Hiệu ứng parallax nhẹ khi cuộn */
-  background-size: cover;
-  background-position: center 30%; /* Điều chỉnh để nội dung chính nổi bật */
-  min-height: 80vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  padding: 40px 20px;
-}
-
-/* Lớp phủ mờ (Overlay) để tăng độ tương phản của chữ */
-.hero-content-overlay {
-  background-color: rgba(0, 0, 0, 0.4); /* Màu đen trong suốt */
-  padding: 40px;
-  border-radius: 15px;
-  text-align: center;
-  max-width: 900px;
-  width: 100%;
-  z-index: 10;
-}
-
-/* Định dạng Form tìm kiếm */
-.search-form-container {
-  /* Đây là nơi Tailwind CSS classes như bg-white/90 và shadow-3xl sẽ phát huy tác dụng */
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-/* === THANH ĐIỀU HƯỚNG VÀ FOOTER (Nếu dùng Component riêng) === */
-.header-bar {
-  /* Ví dụ: Dùng Flexbox, màu nền tối/mờ */
-  background-color: #0d47a1; /* Xanh đậm */
-  color: white;
-  padding: 15px 40px;
-  /* ... (Logic cho Logo, Links, Auth Buttons) ... */
-}
-
-/* === FEATURE CARDS === */
-.feature-card {
-  /* Thiết kế thẻ đẹp, hiệu ứng hover mượt mà */
-  border: 1px solid #eee;
-  transition: transform 0.3s ease-in-out;
-}
-.feature-card:hover {
-  transform: translateY(-5px); /* Nhấn nhá khi rê chuột */
-}
-/* Thêm các lớp này vào file CSS của bạn (ví dụ: src/index.css) */
-
-.input-label {
-    @apply block text-xs font-semibold text-gray-500 mb-1 text-left;
-}
-
-.input-field-style {
-    /* Đảm bảo input chiếm hết chiều rộng và có padding */
-    @apply w-full p-3 pl-10 border border-gray-300 rounded-lg bg-white transition-all duration-300;
-}
-
-.input-field-style:focus {
-    /* Khi focus, viền ngoài biến mất và dùng ring */
-    @apply outline-none border-blue-500 ring-4 ring-opacity-20; 
-}
-
-.input-icon {
-    /* Định vị icon bên trong input field */
-    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-lg text-gray-400;
-    top: 55%; /* Điều chỉnh icon xuống thấp hơn một chút so với label */
-}
-
-/* Điều chỉnh lại vị trí top cho icon của ngày/số hành khách */
-input[type="date"] + .input-icon,
-input[type="number"] + .input-icon {
-    top: 55%;
-}
-
-/* Fix lỗi input date trên một số trình duyệt hiển thị icon lịch */
-input[type="date"] {
-    appearance: none;
-}
-/* src/index.css */
-
-/* --- GENERAL RESET (Nếu cần) --- */
+/* --- GENERAL RESET --- */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+/* === KHU VỰC CHÍNH (HERO) === */
+.hero-section {
+    background-image: url("https://haycafe.vn/wp-content/uploads/2021/12/Hinh-anh-may-bay-dep-nhat.jpg");
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center 30%;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 40px 20px;
+}
+/* Lớp phủ mờ */
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.4); /* Lớp phủ mờ tối */
+    z-index: 1; 
+}
+.hero-content-overlay {
+    background-color: rgba(0, 0, 0, 0.4); 
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 900px;
+    width: 100%;
+    z-index: 10;
+}
+
+/* --- THANH ĐIỀU HƯỚNG VÀ FOOTER --- */
+.header-bar {
+    background-color: #0d47a1; 
+    color: white;
+    padding: 15px 40px;
 }
 
 /* --- FEATURE CARD STYLING --- */
@@ -98,27 +54,25 @@ input[type="date"] {
     padding: 30px;
     background-color: white;
     border-radius: 12px;
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* Shadow tinh tế */
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease-in-out;
-    border-top: 4px solid #3b82f6; /* Viền xanh dương */
+    border-top: 4px solid #3b82f6; 
 }
 
 .feature-card-style:hover {
-    transform: translateY(-8px); /* Hiệu ứng nâng lên mềm mại */
-    box-shadow: 0 15px 25px rgba(59, 130, 246, 0.3); /* Shadow nổi bật */
+    transform: translateY(-8px);
+    box-shadow: 0 15px 25px rgba(59, 130, 246, 0.3);
 }
 
 .feature-icon {
     font-size: 40px;
     margin-bottom: 15px;
     display: block;
-    /* Giả định màu sắc: */
-    color: #3b82f6; /* Xanh dương */
+    color: #3b82f6; 
 }
 
-/* Định nghĩa màu sắc cụ thể cho icon */
-.icon-security { color: #10b981; /* Xanh lá */ }
-.icon-support { color: #f97316; /* Cam */ }
+.icon-security { color: #10b981; }
+.icon-support { color: #f97316; }
 
 .feature-title {
     font-size: 1.25rem;
@@ -130,4 +84,50 @@ input[type="date"] {
 .feature-description {
     font-size: 0.875rem;
     color: #6b7280;
+}
+
+/* === SỬA LỖI INPUT CSS TỪ TAILWIND SANG CSS THUẦN === */
+
+.input-label {
+    display: block; 
+    font-size: 0.75rem; /* text-xs */
+    font-weight: 600; /* font-semibold */
+    color: #6b7280; /* text-gray-500 */
+    margin-bottom: 4px; /* mb-1 (4px) */
+    text-align: left;
+}
+
+.input-field-style {
+    /* Đảm bảo input chiếm hết chiều rộng và có padding */
+    width: 100%; 
+    padding: 12px; /* p-3 */
+    padding-left: 40px; /* pl-10 */
+    border: 1px solid #d1d5db; /* border border-gray-300 */
+    border-radius: 8px; /* rounded-lg */
+    background-color: white; 
+    transition: all 0.3s ease-in-out; /* transition-all duration-300 */
+}
+
+.input-field-style:focus {
+    /* Khi focus */
+    outline: none;
+    border-color: #3b82f6; /* border-blue-500 */
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); /* ring-4 ring-opacity-20 */
+}
+
+.input-icon {
+    /* Định vị icon bên trong input field */
+    position: absolute;
+    left: 12px; /* left-3 */
+    top: 50%; /* top-1/2 */
+    transform: translateY(-50%); /* transform -translate-y-1/2 */
+    font-size: 1.125rem; /* text-lg */
+    color: #9ca3af; /* text-gray-400 */
+    /* Điều chỉnh lại vị trí top cho icon */
+    top: 58%; 
+}
+
+/* Fix lỗi input date trên một số trình duyệt hiển thị icon lịch */
+input[type="date"] {
+    appearance: none;
 }
