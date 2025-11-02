@@ -1,0 +1,10 @@
+:root{
+  --bg:#0b0b0b;
+  --fg:#e6e6e6;
+  --accent:#7ab4ff;
+  --muted:#9aa6b2;
+}
+.terminal-page{max-width:760px;margin:24px auto;padding:16px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03)}
+label{display:block;color:var(--muted);margin-top:8px}
+input{width:100%;padding:8px;margin-top:4px;background:#0f1720;border:1px solid rgba(255,255,255,0.03);color:var(--fg)}
+button{margin-top:12px;padding:8px 12px;background:var(--accent);border:none;color:#041025}

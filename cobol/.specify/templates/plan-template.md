@@ -29,9 +29,21 @@
 
 ## Constitution Check
 
+## Constitution Check
+
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+The plan MUST include explicit verification steps for the project's constitution
+principles. At minimum, provide deliverables or checks for:
+
+- Reverse-engineering mapping: for any implemented business rule, include a
+  mapping document linking the COBOL source(s) to the modern implementation.
+- UI Fidelity: reference the map files/screens and a plan for reproducing terminal
+  layout and pixel/position checks (screenshots, visual diffs).
+- Data Model Mapping: ERD and DB2 → PostgreSQL mapping plus migration scripts.
+- Testing: Playwright E2E test plan derived from reverse-engineered user journeys.
+- Containerization: specify `Dockerfile` and `docker-compose.yml` delivery for
+  local/dev runs.
 
 ## Project Structure
 

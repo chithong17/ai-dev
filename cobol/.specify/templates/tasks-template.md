@@ -62,12 +62,15 @@ description: "Task list template for feature implementation"
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
+- [ ] T004 Analyze DB2 artifacts and DCLGEN copybooks; produce ERD and a DB2→Postgres mapping document
+- [ ] T004b Implement Postgres schema migrations (SQL or migration tool) derived from T004
+- [ ] T005 [P] Implement authentication/authorization framework (preserve crypto verification semantics from `CICS/LOGIN/CRYPTO-VERIFICATION`)
 - [ ] T006 [P] Setup API routing and middleware structure
 - [ ] T007 Create base models/entities that all stories depend on
 - [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
+- [ ] T009 Setup environment configuration management and environment files for containerized runs
+- [ ] T00X Setup Playwright scaffolding and CI integration; add initial E2E tests derived from reverse-engineered scenarios
+- [ ] T00Y Create UI theme and terminal-style CSS utilities and add visual-snapshot tests for critical screens
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 

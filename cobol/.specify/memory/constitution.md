@@ -1,50 +1,124 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+
+- Version change: unspecified → 1.0.0
+- Modified principles: (new)set →
+	- I. Spec-Accurate Reverse Engineering
+	- II. UI Fidelity
+	- III. Data Model Fidelity
+	- IV. Test-First & E2E Validation
+	- V. Modern, Containerized Architecture
+- Added sections: Development Workflow, Additional Constraints
+- Removed sections: none
+- Templates requiring updates:
+	- .specify/templates/plan-template.md: ✅ updated
+	- .specify/templates/spec-template.md: ✅ updated
+	- .specify/templates/tasks-template.md: ✅ updated
+	- .specify/templates/commands/*.md: ⚠ pending (verify command docs reference generic agents)
+- Follow-up TODOs: RATIFICATION_DATE (TODO)
+-->
+
+# COBOL-AIRLINES Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Spec-Accurate Reverse Engineering (NON-NEGOTIABLE)
+All business logic implemented in the modernized system MUST be directly reverse-engineered
+from the legacy COBOL sources. No new or invented business rules are permitted unless
+explicitly documented and approved by the project maintainers. Implementations MUST
+reference the primary logic sources and include a mapping document (COBOL source →
+modern implementation) and automated tests that demonstrate behavioral parity.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+- Primary logic sources (MUST be used for authoritative behavior):
+	- `CICS/LOGIN/LOGIN-COB`
+	- `CICS/LOGIN/CRYPTO-VERIFICATION`
+	- `CICS/SALES-MAP/SRCHFLY-COB`
+	- `CICS/SALES-MAP/SELL1-COB`
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+Rationale: The hackathon goal is a faithful migration; correctness depends on literal
+translation of legacy business behavior.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. UI Fidelity (NON-NEGOTIABLE)
+The React frontend MUST reproduce the original terminal screens' layout and interaction
+semantics. Visual fidelity is judged against the provided map files and screenshots.
+Implementations MUST use CSS or CSS-in-JS to recreate the terminal look (black background,
+colored text, fixed-width grid) and map field positions to the original maps.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+- Primary UI sources (MUST be used):
+	- `CICS/LOGIN/MAP1.png`
+	- `CICS/SALES-MAP/SRCHFLY1.png`
+	- `CICS/SALES-MAP/sell1-1.png`
+	- `CICS/SALES-MAP/SRCHTKT2.png`
+	- Map definitions: `CICS/LOGIN/LOGINMAP`, `CICS/SALES-MAP/SRCHFLI-MAP`, `CICS/SALES-MAP/SELL1-MAP`
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+Rationale: Judges require pixel-accurate terminal UX to validate the migration.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### III. Data Model Fidelity (NON-NEGOTIABLE)
+The relational schema and data semantics MUST be extracted from the DB2 artifacts and
+copybooks, then converted to PostgreSQL with equivalent constraints and types. The
+deliverable MUST include: ERD, SQL migrations, and a documented mapping from DB2
+definitions/copybooks to Postgres schema.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- Primary data sources (MUST be used):
+	- `DB2/DER-COB-AIRLINES.pdf`
+	- `DB2/create-db`
+	- `DB2/DCLGEN/EMPLO-DCLGEN`, `DB2/DCLGEN/FLIGHT-DCLGEN`, `DB2/DCLGEN/PASSENG-DCLGEN`, `DB2/DCLGEN/TICKET-DCLGEN`
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+Rationale: Data integrity and reportability require faithful schema translation.
+
+### IV. Test-First & E2E Validation (NON-NEGOTIABLE)
+All code MUST be testable. Unit and integration tests MUST accompany implementations.
+End-to-end tests using Playwright MUST be included and authored from the reverse-
+engineered user journeys and the COBOL input/output behavior. Tests should be
+written before implementation and validated as part of CI.
+
+Rationale: Tests are the measurable contract confirming parity with legacy behavior.
+
+### V. Modern, Containerized Architecture (REQUIRED)
+The modernized system MUST use the approved stack and be deliverable as containers.
+Minimum requirements: Java 17 + Spring Boot 3 for backend (Spring Data JPA), React 18
+for frontend (functional components + Hooks), PostgreSQL for persistence, and
+complete container artifacts (`Dockerfile`, `docker-compose.yml`) for local/dev
+deployment.
+
+Rationale: Ensures reproducible builds, CI/CD readiness, and cloud portability.
+
+## Additional Constraints
+
+- Security: Cryptographic verification implemented in `CICS/LOGIN/CRYPTO-VERIFICATION`
+	MUST be preserved; where modern libraries are used, include a compatibility test
+	demonstrating identical outputs for sample inputs from legacy tests.
+- Performance: No explicit performance SLOs required for the hackathon, but heavy
+	deviations from legacy response characteristics should be documented.
+
+## Development Workflow
+
+- All feature work MUST be driven by a spec in `specs/[feature]/spec.md` and an
+	implementation plan. Each plan MUST include a "Constitution Check" demonstrating
+	how the feature satisfies Principles I–V. PRs that change behavior MUST include
+	mapping documents and updated Playwright tests.
+
+- Intentionally retained template placeholders: `specs/[feature]/spec.md` is a
+	deliberate path-template used across plans and templates; it indicates the
+	expected spec folder for each feature and is not an unresolved governance token.
+
+- Code reviews MUST verify:
+	1. Source mapping to COBOL artifacts for behavioral changes.
+	2. UI layout fidelity screenshots and diffs for relevant screens.
+	3. Database migration correctness and sample data migration scripts.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- Amendments: Changes to this constitution MUST be proposed through a PR that:
+	1. Explains the rationale and scope of the amendment.
+	2. Lists impacted principles, templates, and tests.
+	3. Includes a migration plan for affected artifacts.
+	Approval requires at least one maintainer review and a majority of active
+	contributors on the PR (or explicit maintainers' approval if contributor list
+	is small).
+- Versioning: Semantic versioning for the constitution (MAJOR.MINOR.PATCH):
+	- MAJOR: Backward-incompatible governance or principle removal/renaming.
+	- MINOR: Addition of new principles or material expansions.
+	- PATCH: Wording clarifications and non-semantic fixes.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): provide original adoption date | **Last Amended**: 2025-11-02
