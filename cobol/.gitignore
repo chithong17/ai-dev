@@ -1,0 +1,20 @@
+# Ignore Java build files
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Ignore Node.js dependencies
+node_modules/
+
+# Ignore logs
+*.log
+
+# Ignore environment files
+.env
+
+# Ignore IDE files
+.idea/
+.vscode/
+*.iml

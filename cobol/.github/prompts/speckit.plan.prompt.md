@@ -79,3 +79,103 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 - Use absolute paths
 - ERROR on gate failures or unresolved clarifications
+
+
+# SpecKit Phase 2 – Implementation Prompt
+
+## Goal
+Continue project setup for the **Airline Management System**.  
+Generate full backend and frontend implementation based on the planning artifacts:
+- research.md
+- data-model.md
+- contracts/openapi.yaml
+- quickstart.md
+
+## Stack
+- **Backend:** Java Spring Boot (JPA/Hibernate, REST, Lombok)
+- **Frontend:** React + Tailwind CSS (TypeScript)
+- **Database:** PostgreSQL
+- **Testing:** JUnit (backend), Playwright (frontend)
+- **Deployment:** Local (Docker optional)
+
+---
+
+## Tasks
+
+### 🏗️ Backend Generation
+Inside `/backend`:
+1. Create full Spring Boot structure under `com.example.airline`:
+   - `entity/` → based on `data-model.md`
+   - `repository/` → extend `JpaRepository`
+   - `service/` → CRUD and business logic
+   - `controller/` → REST endpoints defined in `contracts/openapi.yaml`
+   - `dto/` and `mapper/` → optional data transfer objects
+2. Configure:
+   - PostgreSQL connection in `application.properties`
+   - Global exception handling and validation
+3. Add sample JUnit tests for one entity (e.g., Flight).
+
+---
+
+### 💻 Frontend Generation
+Inside `/frontend`:
+1. Initialize React + Tailwind project (TypeScript template).
+2. Create components/pages:
+   - `pages/FlightList.tsx`
+   - `pages/FlightForm.tsx`
+   - `components/Navbar.tsx`
+   - `services/api.ts` → handles API requests to backend
+3. Implement CRUD UI for each major entity defined in `data-model.md`.
+4. Ensure responsive design using Tailwind classes.
+5. Add simple Playwright test for one page (e.g., checking flight list loads).
+
+---
+
+### ⚙️ Integration
+1. Configure CORS in backend to allow frontend access.
+2. Add a `docker-compose.yml` (optional) with:
+   - `backend`
+   - `frontend`
+   - `postgres`
+3. Update `quickstart.md` with new setup instructions:
+   - Run database
+   - Start backend
+   - Start frontend
+   - Access app at `http://localhost:3000`
+
+---
+
+### ✅ Deliverables
+After running this phase, the project folder should contain:
+
+```
+/backend
+  ├── src/main/java/com/example/airline/
+  │     ├── entity/
+  │     ├── repository/
+  │     ├── service/
+  │     ├── controller/
+  │     └── dto/
+  ├── src/test/java/com/example/airline/
+  ├── pom.xml
+/frontend
+  ├── src/pages/
+  ├── src/components/
+  ├── src/services/
+  ├── package.json
+contracts/openapi.yaml
+data-model.md
+quickstart.md
+research.md
+```
+
+Then proceed to testing and manual refinement.
+
+---
+
+## Command Hint
+If CLI is available:
+```bash
+speckit implement
+```
+If blocked, execute this prompt manually as a system plan for Phase 2.
