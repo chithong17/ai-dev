@@ -7,7 +7,7 @@ const api = axios.create({ baseURL });
 // THÊM INTERCEPTOR (BỘ CHẶN) NÀY
 api.interceptors.request.use(
   (config) => {
-    // Lấy token từ localStorage (nơi useAuth.js [cite: "chithong17/ai-dev/ai-dev-main/cobol/frontend/src/state/useAuth.js"] lưu nó)
+    // Lấy token từ localStorage (nơi useAuth.js lưu nó)
     const token = localStorage.getItem('jwt'); 
     if (token) {
       // Đính kèm token vào header
@@ -27,4 +27,3 @@ api.interceptors.response.use(r => r, err => {
 });
 
 export default api;
-
