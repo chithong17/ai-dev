@@ -1,4 +1,99 @@
-html,body,#root{height:100%;margin:0}
-body{font-family:monospace;background:#0b0b0b;color:#e6e6e6}
-a{color:#7ab4ff}
-.error{color:#ff7b7b;margin-top:8px}
+/* XÓA CSS CŨ VÀ THAY BẰNG CSS NÀY */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--accent);
+}
+
+.terminal-page {
+  max-width: 960px; /* Mô phỏng chiều rộng 80 cột terminal */
+  margin: 2rem auto;
+  padding: 1rem;
+  border: 2px solid var(--fg);
+  min-height: 70vh; /* Mô phỏng chiều cao terminal */
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  color: var(--accent);
+  display: block;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+/* Kiểu chung cho các input mô phỏng terminal */
+input[type="text"], 
+input[type="password"], 
+input[type="date"], 
+input[type="number"] {
+  background-color: var(--bg);
+  color: var(--input-fg);
+  border: none;
+  border-bottom: 1px solid var(--fg); /* Dòng gạch dưới */
+  font-family: var(--font-family);
+  font-size: 1em;
+  padding: 4px;
+  width: 300px; /* Độ rộng cố định */
+}
+
+input:focus {
+  outline: none;
+  border-bottom: 1px solid var(--muted);
+}
+
+button {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: var(--muted); /* Nút màu vàng */
+  border: none;
+  color: #000000; /* Chữ đen trên nút */
+  font-family: var(--font-family);
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+button:hover {
+  background: var(--fg); /* Nút xanh khi hover */
+}
+
+.error-message {
+  color: var(--error);
+  margin-top: 12px;
+  background-color: #300; /* Nền đỏ sẫm cho lỗi */
+  padding: 8px;
+  font-weight: bold;
+}
+
+h2 {
+  color: var(--muted); /* Tiêu đề màu vàng */
+  text-align: center;
+}
+
+/* Căn chỉnh các thành phần form cho giống COBOL */
+.form-grid {
+  display: grid;
+  grid-template-columns: 150px 300px;
+  gap: 10px;
+  align-items: center;
+}
+
+.form-grid label {
+  text-align: right;
+  padding-right: 10px;
+  color: var(--accent);
+}
+
