@@ -21,7 +21,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest req) {
         try {
-            AuthResponse resp = authService.authenticate(req.getEmpid(), req.getPassword());
+            AuthResponse resp = authService.authenticate(req);
             return ResponseEntity.ok(resp);
         } catch (AuthService.AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(java.util.Map.of("error", e.getMessage()));
