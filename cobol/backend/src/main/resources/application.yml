@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cobol_airlines
+    username: cobol
+    password: changeme
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+  profiles:
+    active: dev
+
+# Test profile uses H2 in-memory database
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+app:
+  jwt:
+    secret: change-me-in-production
+    ttl-seconds: 3600

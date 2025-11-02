@@ -5,6 +5,11 @@
 **Status**: Draft  
 **Input**: User description: "$ARGUMENTS"
 
+**Constitution Gates**: This spec MUST document how the feature will satisfy the
+project constitution. Call out: reverse-engineering sources (COBOL files), UI
+fidelity requirements (map/screenshot references), DB2→Postgres mapping (if data
+involved), and Playwright E2E scenarios derived from COBOL flows.
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--

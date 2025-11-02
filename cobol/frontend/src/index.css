@@ -1,0 +1,4 @@
+html,body,#root{height:100%;margin:0}
+body{font-family:monospace;background:#0b0b0b;color:#e6e6e6}
+a{color:#7ab4ff}
+.error{color:#ff7b7b;margin-top:8px}
