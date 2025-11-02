@@ -1,4 +1,3 @@
-/* XÓA TẤT CẢ CSS CŨ VÀ THAY BẰNG CSS NÀY */
 :root {
   --bg: #000000;       /* Nền đen tuyền */
   --fg: #00FF00;       /* Chữ xanh lá cây (mặc định) */
@@ -8,4 +7,3 @@
   --input-fg: #FFFFFF; /* Chữ trắng (cho vùng nhập liệu) */
   --font-family: 'Courier New', Courier, monospace;
 }
-
