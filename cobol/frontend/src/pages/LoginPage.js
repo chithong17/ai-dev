@@ -17,7 +17,8 @@ export default function LoginPage(){
       const resp = await api.post('/api/auth/login', { empid, password });
       setToken(resp.data.token);
       // redirect to search for Sales dept (frontend routing handles)
-      navigate('/search');
+      navigate('/booking-step1');
+
     } catch (err) {
       setError(err?.response?.data?.error || 'Login failed');
     }
