@@ -10,23 +10,22 @@ test.describe('Flow: Đặt vé Bước 1 (E2E)', () => {
     await page.click('button[type="submit"]');
     await page.waitForURL('http://localhost:3000/search');
     
-    // Điều hướng đến trang đặt vé (Giả sử có 1 nút F6=SELL)
-    // Vì không có nút, chúng ta điều hướng thủ công
+    // Điều hướng đến trang đặt vé
     await page.goto('http://localhost:3000/booking-step1');
   });
 
   test('Xác thực Bước 1 (Research) thành công khớp với sell1-1.png', async ({ page }) => {
-    // 1. Điền dữ liệu từ sell1-1.png [cite: "kerestes/cobol-airlines/COBOL-AIRLINES-04806ce49a9532da2a9404e0f384e32c5b1c9ccb/CICS/SALES-MAP/sell1-1.png"]
+    // 1. Điền dữ liệu từ sell1-1.png
     await page.fill('input[name="clientid"]', '100'); // CLIENT ID
     await page.fill('input[name="flightnum"]', 'CB2204'); // FLIGHT NUM
     await page.fill('input[name="date"]', '2022-09-29'); // DATE
     await page.fill('input[name="passnum"]', '3'); // PASS NUMBER
 
-    // 2. Nhấp nút "F11=RESEARCH"
-    await page.click('button:text("F11=RESEARCH")');
+    // 2. Nhấp nút "F11=RESEARCH" (Giả sử nút có text này)
+    await page.click('button:text("Research")'); // Cập nhật text nếu cần
 
     // 3. Khẳng định (Assert) các trường chỉ đọc (read-only) được điền
-    // Dữ liệu này đến từ logic của BookingServiceImpl (dựa trên SELL1-COB [cite: "kerestes/cobol-airlines/COBOL-AIRLINES-04806ce49a9532da2a9404e0f384e32c5b1c9ccb/CICS/SALES-MAP/SELL1-COB", lines 283-294])
+    // Dữ liệu này đến từ logic của BookingServiceImpl (dựa trên SELL1-COB)
     
     // (Đợi cho phần tử .booking-quote xuất hiện)
     await page.waitForSelector('.booking-quote'); 
@@ -49,9 +48,9 @@ test.describe('Flow: Đặt vé Bước 1 (E2E)', () => {
     await page.fill('input[name="date"]', '2022-09-29');
     await page.fill('input[name="passnum"]', '1');
 
-    await page.click('button:text("F11=RESEARCH")');
+    await page.click('button:text("Research")');
 
-    // Khẳng định (Assert) thông báo lỗi từ SELL1-COB [cite: "kerestes/cobol-airlines/COBOL-AIRLINES-04806ce49a9532da2a9404e0f384e32c5b1c9ccb/CICS/SALES-MAP/SELL1-COB", line 249]
+    // Khẳng định (Assert) thông báo lỗi từ SELL1-COB
     const errorMessage = page.locator('.error-message');
     await expect(errorMessage).toBeVisible();
     await expect(errorMessage).toHaveText('THIS PASSENGER DOES NOT EXIST');
