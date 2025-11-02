@@ -32,7 +32,12 @@ public class AuthServiceImpl implements AuthService {
         String crypt = cryptoService.produceCryptPass(empid, password, admidateStr);
         String stored = emp.getStoredCryptpass();
         if (stored == null || !stored.equals(crypt)) {
-            throw new AuthenticationException("PASSWORD OR USERID INCORRECT.");
+            // As a pragmatic migration fallback, attempt legacyMatches which tries
+            // WS-KEY values to reproduce legacy cryptpass for existing accounts.
+            boolean legacyOk = cryptoService.legacyMatches(empid, password, admidateStr, stored);
+            if (!legacyOk) {
+                throw new AuthenticationException("PASSWORD OR USERID INCORRECT.");
+            }
         }
 
         String token = jwtService.generateToken(emp.getEmpid(), emp.getDeptid());

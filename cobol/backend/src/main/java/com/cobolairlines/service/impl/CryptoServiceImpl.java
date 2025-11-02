@@ -60,54 +60,142 @@ public class CryptoServiceImpl implements CryptoService {
         int wsKey1 = wsKey;
         int wsUserId1 = 0;
 
-        char[] crypt = new char[8];
-        for (int i = 0; i < 8; i++) crypt[i] = '\u0000';
+    // Initialize crypt chars to spaces (COBOL INITIALIZE on X fields sets spaces)
+    char[] crypt = new char[8];
+    for (int i = 0; i < 8; i++) crypt[i] = ' ';
 
         // COBOL loops are 1-based
         for (int counter1 = 1; counter1 <= 8; counter1++) {
             char pwdChar = lsPassword.length() >= counter1 ? lsPassword.charAt(counter1 - 1) : ' ';
             if (pwdChar == ' ') break; // STOP when password char is space
 
-            // In COBOL an inner loop increments counter2 and checks cryptbyte values.
-            // For the port we perform a single pass matching the effective behavior.
+            // Inner loop: counter2 starts at counter1 and increments until the produced
+            // WS-CRYPTCHAR(counter1) is not one of the forbidden byte values.
             int counter2 = counter1;
-            int wsMod1 = counter2 % 3;
+            int iterations = 0;
+            while (true) {
+                iterations++;
+                if (iterations > 256) break; // safety guard
 
-            // extract 2-char windows (COBOL used (pos:2) and then (2:1) to get the second char)
-            String pwdWindow = (counter1 + 1 <= lsPassword.length()) ? lsPassword.substring(counter1 - 1, Math.min(counter1 + 1, lsPassword.length())) : (lsPassword.charAt(counter1 - 1) + " ");
-            String uidWindow = (counter1 + 1 <= lsUserId.length()) ? lsUserId.substring(counter1 - 1, Math.min(counter1 + 1, lsUserId.length())) : (lsUserId.charAt(counter1 - 1) + " ");
+                int wsMod1 = counter2 % 3;
 
-            char takeChar;
-            switch (wsMod1) {
-                case 0:
-                    // COMPUTE WS-KEY1 = WS-PASS * WS-KEY1; MOVE WS-KEY1 TO WS-PASS
-                    wsKey1 = safeMul(wsPass, wsKey1);
-                    wsPass = wsKey1;
-                    // MOVE WS-PASSWORD(2:1) TO WS-CRYPTCHAR
-                    takeChar = pwdWindow.length() >= 2 ? pwdWindow.charAt(1) : pwdWindow.charAt(0);
-                    crypt[counter1 - 1] = takeChar;
+                // extract 2-char windows (COBOL used (pos:2) and then (2:1) to get the second char)
+                String pwdWindow = (counter1 + 1 <= lsPassword.length()) ? lsPassword.substring(counter1 - 1, Math.min(counter1 + 1, lsPassword.length())) : (lsPassword.charAt(counter1 - 1) + " ");
+                String uidWindow = (counter1 + 1 <= lsUserId.length()) ? lsUserId.substring(counter1 - 1, Math.min(counter1 + 1, lsUserId.length())) : (lsUserId.charAt(counter1 - 1) + " ");
+
+                char candidate;
+                switch (wsMod1) {
+                    case 0:
+                        wsKey1 = safeMul(wsPass, wsKey1);
+                        wsPass = wsKey1;
+                        candidate = pwdWindow.length() >= 2 ? pwdWindow.charAt(1) : pwdWindow.charAt(0);
+                        break;
+                    case 1:
+                        wsUserId1 = safeMul(wsPass, wsUserId1);
+                        candidate = uidWindow.length() >= 2 ? uidWindow.charAt(1) : uidWindow.charAt(0);
+                        break;
+                    case 2:
+                        wsKey1 = safeMul(wsPass, safeMul(wsUserId1, wsKey1));
+                        wsPass = wsKey1;
+                        candidate = pwdWindow.length() >= 2 ? pwdWindow.charAt(1) : pwdWindow.charAt(0);
+                        break;
+                    default:
+                        candidate = '?';
+                }
+
+                // Reject certain byte values: X'40'('@'), X'10' (DLE), X'00' (NUL), X'30'('0'), X'20' (space)
+                int b = (int) candidate & 0xff;
+                if (b != 0x40 && b != 0x10 && b != 0x00 && b != 0x30 && b != 0x20) {
+                    crypt[counter1 - 1] = candidate;
                     break;
-                case 1:
-                    // COMPUTE WS-USERID1 = WS-PASS * WS-USERID1
-                    wsUserId1 = safeMul(wsPass, wsUserId1);
-                    // MOVE WS-USERID(2:1) TO WS-CRYPTCHAR
-                    takeChar = uidWindow.length() >= 2 ? uidWindow.charAt(1) : uidWindow.charAt(0);
-                    crypt[counter1 - 1] = takeChar;
-                    break;
-                case 2:
-                    // COMPUTE  WS-KEY1 = WS-PASS * WS-USERID1 * WS-KEY1
-                    wsKey1 = safeMul(wsPass, safeMul(wsUserId1, wsKey1));
-                    wsPass = wsKey1;
-                    // MOVE WS-PASSWORD(2:1) TO WS-CRYPTCHAR
-                    takeChar = pwdWindow.length() >= 2 ? pwdWindow.charAt(1) : pwdWindow.charAt(0);
-                    crypt[counter1 - 1] = takeChar;
-                    break;
-                default:
-                    crypt[counter1 - 1] = '?';
+                }
+
+                counter2++;
             }
         }
 
         // Build string result of length 8 (COBOL printed/displayed the 8 bytes)
+        return new String(crypt);
+    }
+
+    @Override
+    public boolean legacyMatches(String empid, String password, String admidate, String storedCrypt) {
+        if (storedCrypt == null) return false;
+        // quick early check: if produceCryptPass matches, done
+        String produced = produceCryptPass(empid, password, admidate);
+        if (storedCrypt.equals(produced)) return true;
+
+        // try brute-forcing WS-KEY 0..999 (COBOL used FUNCTION RANDOM * 1000)
+        // cache found wsKey per empid to speed subsequent logins
+        java.util.Map<String, Integer> cache = legacyKeyCache;
+        if (cache.containsKey(empid)) {
+            int cached = cache.get(empid);
+            String p = produceCryptWithWsKey(empid, password, admidate, cached);
+            if (storedCrypt.equals(p)) return true;
+        }
+
+        for (int k = 0; k < 1000; k++) {
+            String p = produceCryptWithWsKey(empid, password, admidate, k);
+            if (storedCrypt.equals(p)) {
+                cache.put(empid, k);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // in-memory cache for found WS-KEYs
+    private final java.util.Map<String, Integer> legacyKeyCache = new java.util.concurrent.ConcurrentHashMap<>();
+
+    private String produceCryptWithWsKey(String empid, String password, String admidate, int wsKey) {
+        // replicate the internal portion of produceCryptPass but using provided wsKey
+        String emp = empid == null ? "" : empid;
+        String pwd = password == null ? "" : password;
+        String lsUserId = (emp.length() >= 8) ? emp.substring(0, 8) : String.format("%-8s", emp);
+        String lsPassword = (pwd.length() >= 8) ? pwd.substring(0, 8) : String.format("%-8s", pwd);
+
+        int wsPass = 0;
+        int wsKey1 = wsKey;
+        int wsUserId1 = 0;
+        char[] crypt = new char[8];
+        for (int i = 0; i < 8; i++) crypt[i] = ' ';
+
+        for (int counter1 = 1; counter1 <= 8; counter1++) {
+            char pwdChar = lsPassword.length() >= counter1 ? lsPassword.charAt(counter1 - 1) : ' ';
+            if (pwdChar == ' ') break;
+
+            int counter2 = counter1;
+            int iterations = 0;
+            while (true) {
+                iterations++;
+                if (iterations > 256) break;
+                int wsMod1 = counter2 % 3;
+                String pwdWindow = (counter1 + 1 <= lsPassword.length()) ? lsPassword.substring(counter1 - 1, Math.min(counter1 + 1, lsPassword.length())) : (lsPassword.charAt(counter1 - 1) + " ");
+                String uidWindow = (counter1 + 1 <= lsUserId.length()) ? lsUserId.substring(counter1 - 1, Math.min(counter1 + 1, lsUserId.length())) : (lsUserId.charAt(counter1 - 1) + " ");
+                char candidate;
+                switch (wsMod1) {
+                    case 0:
+                        wsKey1 = safeMul(wsPass, wsKey1);
+                        wsPass = wsKey1;
+                        candidate = pwdWindow.length() >= 2 ? pwdWindow.charAt(1) : pwdWindow.charAt(0);
+                        break;
+                    case 1:
+                        wsUserId1 = safeMul(wsPass, wsUserId1);
+                        candidate = uidWindow.length() >= 2 ? uidWindow.charAt(1) : uidWindow.charAt(0);
+                        break;
+                    default:
+                        wsKey1 = safeMul(wsPass, safeMul(wsUserId1, wsKey1));
+                        wsPass = wsKey1;
+                        candidate = pwdWindow.length() >= 2 ? pwdWindow.charAt(1) : pwdWindow.charAt(0);
+                }
+                int b = (int) candidate & 0xff;
+                if (b != 0x40 && b != 0x10 && b != 0x00 && b != 0x30 && b != 0x20) {
+                    crypt[counter1 - 1] = candidate;
+                    break;
+                }
+                counter2++;
+            }
+        }
         return new String(crypt);
     }
 

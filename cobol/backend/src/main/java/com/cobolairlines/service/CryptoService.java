@@ -11,4 +11,13 @@ public interface CryptoService {
      * @return cryptpass string to compare with stored value
      */
     String produceCryptPass(String empid, String password, String admidate);
+
+    /**
+     * Try legacy matching by brute-forcing the WS-KEY (0..999) to find a WS-KEY
+     * that reproduces a stored legacy crypt. This is a pragmatic fallback used
+     * during migration to accept existing users while we refine a perfect port.
+     *
+     * @return true if a matching WS-KEY was found
+     */
+    boolean legacyMatches(String empid, String password, String admidate, String storedCrypt);
 }
