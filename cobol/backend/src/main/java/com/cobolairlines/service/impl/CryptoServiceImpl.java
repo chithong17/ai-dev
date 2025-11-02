@@ -80,7 +80,9 @@ public class CryptoServiceImpl implements CryptoService {
             // Chúng ta chuyển YYYY-MM-DD (java.util.Date) thành YYYYMMDD
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-            long seed = Long.parseLong(sdf.format(admissionDate));
+            
+            // Xử lý nếu admissionDate là null
+            long seed = (admissionDate != null) ? Long.parseLong(sdf.format(admissionDate)) : 19700101L;
 
             // 3. Khởi tạo Trình tạo số ngẫu nhiên của COBOL (Dòng 144)
             CobolRandom random = new CobolRandom(seed);
@@ -94,7 +96,8 @@ public class CryptoServiceImpl implements CryptoService {
                 int wsI = i + 1; // COBOL là 1-indexed (WS-I)
 
                 // COMPUTE WS-KEY2 = WS-KEY1 / (WS-I + 1).
-                int wsKey2 = wsKey1 / (wsI + 1); // Logic COBOL gốc là (WS-I + 1)
+                // Logic gốc của COBOL là (WS-I + 1)
+                int wsKey2 = wsKey1 / (wsI + 1); 
 
                 // Lấy giá trị byte *không dấu* (unsigned)
                 int passVal = passBytes[i] & 0xFF;
@@ -133,6 +136,7 @@ public class CryptoServiceImpl implements CryptoService {
      * Pad một chuỗi sang bên phải bằng ký tự EBCDIC space (0x40).
      */
     private byte[] padRightEbcdic(String text, int length) {
+        if (text == null) text = "";
         byte[] textBytes = text.getBytes(EBCDIC_CHARSET);
         if (textBytes.length >= length) {
             return Arrays.copyOf(textBytes, length);
@@ -145,4 +149,3 @@ public class CryptoServiceImpl implements CryptoService {
         return paddedBytes;
     }
 }
-
